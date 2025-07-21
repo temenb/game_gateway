@@ -42,28 +42,26 @@ serviceRoutes.forEach(({ path, target }) => {
         next();
     });
 
-    app.use(path, createProxyMiddleware({
+    const proxyOptions = {
         target,
         changeOrigin: true,
         pathRewrite: { [`^${path}`]: '' },
         timeout: 5000,
         proxyTimeout: 5000,
-        // onProxyReq: (
-        //     proxyReq: ClientRequest,
-        //     req: Request & { rawBody?: Buffer },
-        //     _res: Response
-        // ) => {
-        //     console.log(`➡️ Forwarding ${req.method} ${req.originalUrl} → ${target}`);
-        //     if (req.rawBody) {
-        //         proxyReq.setHeader('Content-Type', 'application/json');
-        //         proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
-        //         proxyReq.write(req.rawBody);
-        //         console.log(`📦 Body: ${req.rawBody.toString()}`);
-        //     } else {
-        //         console.log(`⚠️ No rawBody to forward`);
-        //     }
-        // }
-    }));
+        onProxyReq: (
+            proxyReq: ClientRequest,
+            req: Request & { rawBody?: Buffer },
+            _res: Response
+        ) => {
+            if (req.rawBody) {
+                proxyReq.setHeader('Content-Type', 'application/json');
+                proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
+                proxyReq.write(req.rawBody);
+            }
+        }
+    } as any;
+
+    app.use(path, createProxyMiddleware(proxyOptions));
 });
 
 export default app;
