@@ -12,12 +12,22 @@ import { publicPaths } from './config/publicPaths.config';
 import { verifyToken } from './middlewares/auth.middleware';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
+
 const app = express();
+
 
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
+
+// 👇 Добавлено здесь
+app.use(express.json());
+
+app.use((req, res, next) => {
+    req.on('data', chunk => console.log('📦 CHUNK:', chunk.toString()));
+    next();
+});
 
 app.use(bodyParser.json({
     verify: (req: Request & { rawBody?: Buffer }, _res, buf) => {
@@ -34,7 +44,7 @@ serviceRoutes.forEach(({ path, target }) => {
         if (publicPaths.includes(req.originalUrl)) {
             return next();
         }
-        verifyToken(req, res, next);
+        return verifyToken(req, res, next);
     });
 
     app.use(path, (req: Request, _res: Response, next: NextFunction) => {
@@ -48,6 +58,7 @@ serviceRoutes.forEach(({ path, target }) => {
         pathRewrite: { [`^${path}`]: '' },
         timeout: 5000,
         proxyTimeout: 5000,
+        selfHandleResponse: false,
         onProxyReq: (
             proxyReq: ClientRequest,
             req: Request & { rawBody?: Buffer },
