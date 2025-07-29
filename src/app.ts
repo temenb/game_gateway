@@ -21,20 +21,6 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-// 👇 Добавлено здесь
-app.use(express.json());
-
-app.use((req, res, next) => {
-    req.on('data', chunk => console.log('📦 CHUNK:', chunk.toString()));
-    next();
-});
-
-app.use(bodyParser.json({
-    verify: (req: Request & { rawBody?: Buffer }, _res, buf) => {
-        req.rawBody = buf;
-    }
-}));
-
 connectRabbit();
 
 serviceRoutes.forEach(({ path, target }) => {
@@ -59,17 +45,17 @@ serviceRoutes.forEach(({ path, target }) => {
         timeout: 5000,
         proxyTimeout: 5000,
         selfHandleResponse: false,
-        onProxyReq: (
-            proxyReq: ClientRequest,
-            req: Request & { rawBody?: Buffer },
-            _res: Response
-        ) => {
-            if (req.rawBody) {
-                proxyReq.setHeader('Content-Type', 'application/json');
-                proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
-                proxyReq.write(req.rawBody);
-            }
-        }
+        // onProxyReq: (
+        //     proxyReq: ClientRequest,
+        //     req: Request & { rawBody?: Buffer },
+        //     _res: Response
+        // ) => {
+        //     if (req.rawBody) {
+        //         proxyReq.setHeader('Content-Type', 'application/json');
+        //         proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
+        //         proxyReq.write(req.rawBody);
+        //     }
+        // }
     } as any;
 
     app.use(path, createProxyMiddleware(proxyOptions));
