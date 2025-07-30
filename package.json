@@ -9,6 +9,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/proto-loader": "^0.8.0",
     "amqplib": "^0.10.3",
     "axios": "^1.6.8",
     "cookie-parser": "^1.4.6",

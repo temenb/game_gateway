@@ -11,6 +11,7 @@ import { traceRequest } from './middlewares/requestLogger.middleware';
 import { publicPaths } from './config/publicPaths.config';
 import { verifyToken } from './middlewares/auth.middleware';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+// import { authClient } from './grpc/clients/auth.client';
 
 
 const app = express();
