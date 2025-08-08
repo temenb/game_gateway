@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package profile;
+
+service ProfileService {
+  rpc Me (MeRequest) returns (ProfileResponse);
+}
+
+message MeRequest {}
+
+message ProfileResponse {
+  string level = 1;
+}

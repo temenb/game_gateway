@@ -1,11 +1,10 @@
 FROM node:22
 
-# Рабочая директория
 WORKDIR /usr/src/app
 
 COPY --chown=node:node package*.json ./
-COPY --chown=node:node  jest.config.js ./
-COPY --chown=node:node  tsconfig.json ./
+COPY --chown=node:node jest.config.js ./
+COPY --chown=node:node tsconfig.json ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node proto ./proto
 
