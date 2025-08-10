@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import { Request, Response } from 'express';
 import * as AuthGrpc from '../../generated/auth';
 
-export const authClient = new AuthGrpc.AuthServiceClient(
+export const authClient = new AuthGrpc.AuthClient(
     process.env.AUTH_SERVICE ?? 'auth:3000',
     grpc.credentials.createInsecure()
 );
