@@ -17,6 +17,10 @@ export const register = (req: Request, res: Response) => {
       console.error('gRPC error:', err);
       return res.status(500).json({ error: 'Internal gRPC error' });
     }
+    // console.log('cors headers were added');
+    // res.setHeader('Access-Control-Allow-Origin', '*');
+    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
     res.json({
       accessToken: grpcResponse.accessToken,
