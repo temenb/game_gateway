@@ -1,12 +1,5 @@
-import * as grpc from '@grpc/grpc-js';
-import * as ShipGrpc from '../../generated/ship';
-import config from '../../config/config';
 import {Request, Response} from "express";
 
-export const shipClient = new ShipGrpc.ShipClient(
-    config.profileServiceUrl,
-    grpc.credentials.createInsecure()
-);
 
 export const health = (req: Request, res: Response) => {
     res.send('In progress');

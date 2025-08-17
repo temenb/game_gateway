@@ -11,7 +11,8 @@ export const config = {
     rabbitHost: process.env.RABBIT_HOST || 'rabbit',
     rabbitUser: process.env.RABBIT_USER || 'user',
     rabbitPass: process.env.RABBIT_PASS || 'password',
-    jwtSecret: process.env.JWT_SECRET || 'secretkey'
+    jwtSecret: process.env.JWT_SECRET || 'secretkey',
+    postgresUrl: process.env.POSTGRES_URL || '',
 };
 
 export default config;
