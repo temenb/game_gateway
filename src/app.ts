@@ -1,7 +1,10 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import * as authClient from './grpc/clients/auth.client';
+import * as asteroidClient from './grpc/clients/asteroid.client';
+import * as shipClient from './grpc/clients/ship.client';
 import cors from 'cors';
+import {listGalaxies} from "./grpc/clients/asteroid.client";
 
 const app = express();
 app.use(express.json());
@@ -17,6 +20,14 @@ app.get('/health', (_, res) => res.send('OK'));
 app.post('/auth/register', authClient.register);
 app.post('/auth/login', authClient.login);
 app.post('/auth/logout', authClient.logout);
-app.post('/auth/refreshTokens', authClient.refreshTokens);
+app.post('/auth/refresh-tokens', authClient.refreshTokens);
+app.post('/auth/forgot-password', authClient.forgotPassword);
+app.post('/auth/reset-password', authClient.resetPassword);
+
+app.post('/asteroid/list', asteroidClient.list);
+// app.post('/asteroid/view', asteroidClient.view);
+app.post('/asteroid/list-galaxies', asteroidClient.listGalaxies);
+// app.post('/ship/list', shipClient.List);
+// app.post('/ship/attack-asteroid', shipClient.AttackAsteroid);
 
 export default app;

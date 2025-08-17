@@ -1,6 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import { Request, Response } from 'express';
 import * as AuthGrpc from '../../generated/auth';
+import {Empty} from "../../generated/google/protobuf/empty";
 
 export const authClient = new AuthGrpc.AuthClient(
     process.env.AUTH_SERVICE ?? 'auth:3000',
@@ -17,12 +18,8 @@ export const register = (req: Request, res: Response) => {
       console.error('gRPC error:', err);
       return res.status(500).json({ error: 'Internal gRPC error' });
     }
-    // console.log('cors headers were added');
-    // res.setHeader('Access-Control-Allow-Origin', '*');
-    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
-    res.json({
+    res.status(201).json({
       accessToken: grpcResponse.accessToken,
       refreshToken: grpcResponse.refreshToken,
       userId: grpcResponse.userId,
@@ -81,6 +78,40 @@ export const logout = (req: Request, res: Response) => {
     res.json({
       success: grpcResponse.success,
       message: grpcResponse.message,
+    });
+  });
+};
+
+export const forgotPassword = (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const grpcRequest: AuthGrpc.ForgotPasswordRequest = { email };
+
+  authClient.forgotPassword(grpcRequest, (err: grpc.ServiceError | null, response?: Empty) => {
+    if (err) {
+      console.error('gRPC error:', err);
+      return res.status(500).json({ error: 'Internal gRPC error' });
+    }
+
+    res.status(200).json({ success: true });
+  });
+};
+
+export const resetPassword = (req: Request, res: Response) => {
+  const { token, newPassword } = req.body;
+
+  const grpcRequest: AuthGrpc.ResetPasswordRequest = { token, newPassword };
+
+  authClient.resetPassword(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
+    if (err || !grpcResponse) {
+      console.error('gRPC error:', err);
+      return res.status(500).json({ error: 'Internal gRPC error' });
+    }
+
+    res.json({
+      accessToken: grpcResponse.accessToken,
+      refreshToken: grpcResponse.refreshToken,
+      userId: grpcResponse.userId,
     });
   });
 };
