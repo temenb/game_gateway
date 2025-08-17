@@ -26,10 +26,10 @@ export interface ListShipsRequest {
 }
 
 export interface ListShipsResponse {
-  ships: Ship[];
+  ships: ShipObject[];
 }
 
-export interface Ship {
+export interface ShipObject {
   id: string;
   x: number;
   y: number;
@@ -112,7 +112,7 @@ function createBaseListShipsResponse(): ListShipsResponse {
 export const ListShipsResponse: MessageFns<ListShipsResponse> = {
   encode(message: ListShipsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.ships) {
-      Ship.encode(v!, writer.uint32(10).fork()).join();
+      ShipObject.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -129,7 +129,7 @@ export const ListShipsResponse: MessageFns<ListShipsResponse> = {
             break;
           }
 
-          message.ships.push(Ship.decode(reader, reader.uint32()));
+          message.ships.push(ShipObject.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -142,13 +142,15 @@ export const ListShipsResponse: MessageFns<ListShipsResponse> = {
   },
 
   fromJSON(object: any): ListShipsResponse {
-    return { ships: globalThis.Array.isArray(object?.ships) ? object.ships.map((e: any) => Ship.fromJSON(e)) : [] };
+    return {
+      ships: globalThis.Array.isArray(object?.ships) ? object.ships.map((e: any) => ShipObject.fromJSON(e)) : [],
+    };
   },
 
   toJSON(message: ListShipsResponse): unknown {
     const obj: any = {};
     if (message.ships?.length) {
-      obj.ships = message.ships.map((e) => Ship.toJSON(e));
+      obj.ships = message.ships.map((e) => ShipObject.toJSON(e));
     }
     return obj;
   },
@@ -158,17 +160,17 @@ export const ListShipsResponse: MessageFns<ListShipsResponse> = {
   },
   fromPartial(object: DeepPartial<ListShipsResponse>): ListShipsResponse {
     const message = createBaseListShipsResponse();
-    message.ships = object.ships?.map((e) => Ship.fromPartial(e)) || [];
+    message.ships = object.ships?.map((e) => ShipObject.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseShip(): Ship {
+function createBaseShipObject(): ShipObject {
   return { id: "", x: 0, y: 0, isBusy: false, asteroidId: "" };
 }
 
-export const Ship: MessageFns<Ship> = {
-  encode(message: Ship, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const ShipObject: MessageFns<ShipObject> = {
+  encode(message: ShipObject, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -187,10 +189,10 @@ export const Ship: MessageFns<Ship> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): Ship {
+  decode(input: BinaryReader | Uint8Array, length?: number): ShipObject {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseShip();
+    const message = createBaseShipObject();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -243,7 +245,7 @@ export const Ship: MessageFns<Ship> = {
     return message;
   },
 
-  fromJSON(object: any): Ship {
+  fromJSON(object: any): ShipObject {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       x: isSet(object.x) ? globalThis.Number(object.x) : 0,
@@ -253,7 +255,7 @@ export const Ship: MessageFns<Ship> = {
     };
   },
 
-  toJSON(message: Ship): unknown {
+  toJSON(message: ShipObject): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
@@ -273,11 +275,11 @@ export const Ship: MessageFns<Ship> = {
     return obj;
   },
 
-  create(base?: DeepPartial<Ship>): Ship {
-    return Ship.fromPartial(base ?? {});
+  create(base?: DeepPartial<ShipObject>): ShipObject {
+    return ShipObject.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<Ship>): Ship {
-    const message = createBaseShip();
+  fromPartial(object: DeepPartial<ShipObject>): ShipObject {
+    const message = createBaseShipObject();
     message.id = object.id ?? "";
     message.x = object.x ?? 0;
     message.y = object.y ?? 0;
@@ -439,10 +441,10 @@ export const AttackAsteroidResponse: MessageFns<AttackAsteroidResponse> = {
   },
 };
 
-export type ShipServiceService = typeof ShipServiceService;
-export const ShipServiceService = {
+export type ShipService = typeof ShipService;
+export const ShipService = {
   listShips: {
-    path: "/ship.ShipService/ListShips",
+    path: "/ship.Ship/ListShips",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: ListShipsRequest): Buffer => Buffer.from(ListShipsRequest.encode(value).finish()),
@@ -451,7 +453,7 @@ export const ShipServiceService = {
     responseDeserialize: (value: Buffer): ListShipsResponse => ListShipsResponse.decode(value),
   },
   attackAsteroid: {
-    path: "/ship.ShipService/AttackAsteroid",
+    path: "/ship.Ship/AttackAsteroid",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: AttackAsteroidRequest): Buffer =>
@@ -463,12 +465,12 @@ export const ShipServiceService = {
   },
 } as const;
 
-export interface ShipServiceServer extends UntypedServiceImplementation {
+export interface ShipServer extends UntypedServiceImplementation {
   listShips: handleUnaryCall<ListShipsRequest, ListShipsResponse>;
   attackAsteroid: handleUnaryCall<AttackAsteroidRequest, AttackAsteroidResponse>;
 }
 
-export interface ShipServiceClient extends Client {
+export interface ShipClient extends Client {
   listShips(
     request: ListShipsRequest,
     callback: (error: ServiceError | null, response: ListShipsResponse) => void,
@@ -501,9 +503,9 @@ export interface ShipServiceClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const ShipServiceClient = makeGenericClientConstructor(ShipServiceService, "ship.ShipService") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ShipServiceClient;
-  service: typeof ShipServiceService;
+export const ShipClient = makeGenericClientConstructor(ShipService, "ship.Ship") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ShipClient;
+  service: typeof ShipService;
   serviceName: string;
 };
 

@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
-import * as authClient from './grpc/clients/auth.client';
-import * as asteroidClient from './grpc/clients/asteroid.client';
-import * as shipClient from './grpc/clients/ship.client';
 import cors from 'cors';
-import {listGalaxies} from "./grpc/clients/asteroid.client";
+import * as authClient from './grpc/clients/auth.client';
+import * as profileClient from './grpc/clients/profile.client';
+import * as shipClient from './grpc/clients/ship.client';
+import * as asteroidClient from "./grpc/clients/asteroid.client";
 
 const app = express();
 app.use(express.json());

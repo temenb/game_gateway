@@ -2,9 +2,10 @@ import * as grpc from '@grpc/grpc-js';
 import { Request, Response } from 'express';
 import * as AuthGrpc from '../../generated/auth';
 import {Empty} from "../../generated/google/protobuf/empty";
+import config from '../../config/config';
 
 export const authClient = new AuthGrpc.AuthClient(
-    process.env.AUTH_SERVICE ?? 'auth:3000',
+    config.authServiceUrl,
     grpc.credentials.createInsecure()
 );
 

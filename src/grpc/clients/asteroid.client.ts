@@ -1,10 +1,11 @@
 import * as grpc from '@grpc/grpc-js';
 import { Request, Response } from 'express';
 import * as AstroidGrpc from '../../generated/asteroid';
+import config from '../../config/config';
 
 
 export const asteroidClient = new AstroidGrpc.AsteroidClient(
-    process.env.AUTH_SERVICE ?? 'asteroid:3000',
+    config.asteroidServiceUrl,
     grpc.credentials.createInsecure()
 );
 

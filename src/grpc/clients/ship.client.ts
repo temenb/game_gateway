@@ -1,9 +1,10 @@
 import * as grpc from '@grpc/grpc-js';
 import { Request, Response } from 'express';
 import * as shipGrpc from '../../generated/ship';
+import config from '../../config/config';
 
 // export const authClient = new AuthGrpc.AuthClient(
-//     process.env.AUTH_SERVICE ?? 'auth:3000',
+//     config.shipServiceUrl,
 //     grpc.credentials.createInsecure()
 // );
 //
