@@ -1,6 +1,7 @@
 import app from './app';
+import config from './config/config';
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 app.listen(PORT, () => {
     console.log(`🚀 Gateway is running on port ${PORT}`);

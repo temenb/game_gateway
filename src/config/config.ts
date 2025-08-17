@@ -11,3 +11,5 @@ export const config = {
     rabbitPass: process.env.RABBIT_PASS || 'password',
     jwtSecret: process.env.JWT_SECRET || 'secretkey'
 };
+
+export default config;
