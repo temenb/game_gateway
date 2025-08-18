@@ -1,6 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as ProfileGrpc from '../../generated/profile';
 import config from '../../config/config';
+import { logger } from '../../utils/logger';
 
 export const profileClient = new ProfileGrpc.ProfileClient(
     config.profileServiceUrl!,
@@ -13,7 +14,7 @@ export const health = () => {
 
     profileClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.HealthReport) => {
         if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
+            logger.error('gRPC error:', err);
 
             throw Error('Internal gRPC error');
         }
@@ -28,7 +29,7 @@ export const status = () => {
 
     profileClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.StatusInfo) => {
         if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
+            logger.error('gRPC error:', err);
 
             throw Error('Internal gRPC error');
         }
@@ -43,7 +44,7 @@ export const livez = () => {
 
     profileClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.LiveStatus) => {
         if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
+            logger.error('gRPC error:', err);
 
             throw Error('Internal gRPC error');
         }
@@ -58,7 +59,7 @@ export const readyz = () => {
 
     profileClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.ReadyStatus) => {
         if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
+            logger.error('gRPC error:', err);
 
             throw Error('Internal gRPC error');
         }

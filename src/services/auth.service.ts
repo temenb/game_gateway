@@ -7,11 +7,7 @@ export const register = async (req: Request, res: Response) => {
     try {
         const response = await AuthClient.register(email, password);
 
-        res.status(201).json({
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-            userId: response.userId,
-        });
+        res.status(201).json(response);
     } catch (err) {
         if (err instanceof Error) {
             return res.status(500).json({ error: err.message });
@@ -26,11 +22,7 @@ export const login = async (req: Request, res: Response) => {
     try {
         const response = await AuthClient.login(email, password);
 
-        res.status(200).json({
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-            userId: response.userId,
-        });
+        res.status(200).json(response);
     } catch (err) {
         if (err instanceof Error) {
             return res.status(500).json({ error: err.message });
@@ -45,11 +37,7 @@ export const refreshTokens = async (req: Request, res: Response) => {
     try {
         const response = await AuthClient.refreshTokens(token);
 
-        res.status(200).json({
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-            userId: response.userId,
-        });
+        res.status(200).json(response);
     } catch (err) {
         if (err instanceof Error) {
             return res.status(500).json({ error: err.message });
@@ -63,10 +51,7 @@ export const logout = async (req: Request, res: Response) => {
 
     try {
         const response = await AuthClient.logout(userId);
-        res.json({
-            success: response.success,
-            message: response.message,
-        });
+        res.json(response);
     } catch (err) {
         if (err instanceof Error) {
             return res.status(500).json({ error: err.message });
@@ -79,7 +64,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;
 
     try {
-        await AuthClient.forgotPassword(email);
+        const response = await AuthClient.forgotPassword(email);
+        res.json(response);
     } catch (err) {
         if (err instanceof Error) {
             return res.status(500).json({ error: err.message });
@@ -95,11 +81,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     try {
         const response = await AuthClient.resetPassword(token, newPassword);
 
-        res.status(200).json({
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-            userId: response.userId,
-        });
+        res.status(200).json(response);
     } catch (err) {
         if (err instanceof Error) {
             return res.status(500).json({ error: err.message });
