@@ -9,9 +9,9 @@ const startedAt = Date.now();
 
 export const health = async (req: Request, res: Response) => {
   const authOk = await checkGrpcHealth(authClient);
-  const profileOk = await checkGrpcHealth(asteroidClient);
-  const asteroidOk = await checkGrpcHealth(shipClient);
-  const shipOk = await checkGrpcHealth(profileClient);
+  const profileOk = await checkGrpcHealth(profileClient);
+  const asteroidOk = await checkGrpcHealth(asteroidClient);
+  const shipOk = await checkGrpcHealth(shipClient);
   res.status(200).send({
     healthy: authOk && profileOk && asteroidOk && shipOk,
     map: {

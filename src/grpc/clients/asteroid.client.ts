@@ -1,106 +1,76 @@
 import * as grpc from '@grpc/grpc-js';
-import { Request, Response } from 'express';
 import * as AsteroidGrpc from '../../generated/asteroid';
 import config from '../../config/config';
+import { logger } from '../../utils/logger';
 
 
+logger.log(config.asteroidServiceUrl);
 export const asteroidClient = new AsteroidGrpc.AsteroidClient(
     config.asteroidServiceUrl,
     grpc.credentials.createInsecure()
 );
 
-export const list = (req: Request, res: Response) => {
-    const { userId, galaxyId } = req.body;
+export const health = (): Promise<AsteroidGrpc.HealthReport> => {
 
-    const grpcRequest: AsteroidGrpc.ListAsteroidsRequest = { userId, galaxyId };
+    const grpcRequest: AsteroidGrpc.Empty = {};
 
-    asteroidClient.listAsteroids(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.ListAsteroidsResponse) => {
-        if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
-            return res.status(500).json({ error: 'Internal gRPC error' });
-        }
+    return new Promise((resolve, reject) => {
+        asteroidClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.HealthReport) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-        res.status(201).json({
-            asteroids: grpcResponse.asteroids,
+            resolve(grpcResponse);
         });
     });
 };
 
-export const listGalaxies = (req: Request, res: Response) => {
-    const { userId } = req.body;
+export const status = (): Promise<AsteroidGrpc.StatusInfo> => {
 
-    const grpcRequest: AsteroidGrpc.ListGalaxiesRequest = { userId };
+    const grpcRequest: AsteroidGrpc.Empty = {};
 
-    asteroidClient.listGalaxies(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.ListGalaxiesResponse) => {
-        if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
-            return res.status(500).json({ error: 'Internal gRPC error' });
-        }
+    return new Promise((resolve, reject) => {
+        asteroidClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.StatusInfo) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-        res.status(201).json({
-            galaxies: grpcResponse.galaxies,
+            resolve(grpcResponse);
         });
     });
 };
 
-export const health = () => {
+export const livez = (): Promise<AsteroidGrpc.LiveStatus> => {
 
-    const grpcRequest: AsteroidGrpc.Empty = { };
+    const grpcRequest: AsteroidGrpc.Empty = {};
 
-    asteroidClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.HealthReport) => {
-        if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
+    return new Promise((resolve, reject) => {
+        asteroidClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.LiveStatus) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
+            resolve(grpcResponse);
+        });
     });
 };
 
-export const status = () => {
+export const readyz = (): Promise<AsteroidGrpc.ReadyStatus> => {
 
-    const grpcRequest: AsteroidGrpc.Empty = { };
+    const grpcRequest: AsteroidGrpc.Empty = {};
 
-    asteroidClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.StatusInfo) => {
-        if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
+    return new Promise((resolve, reject) => {
+        asteroidClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.ReadyStatus) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
+            resolve(grpcResponse);
+        });
     });
 };
-
-export const livez = () => {
-
-    const grpcRequest: AsteroidGrpc.Empty = { };
-
-    asteroidClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.LiveStatus) => {
-        if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
-
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
-    });
-};
-
-export const readyz = () => {
-
-    const grpcRequest: AsteroidGrpc.Empty = { };
-
-    asteroidClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.ReadyStatus) => {
-        if (err || !grpcResponse) {
-            console.error('gRPC error:', err);
-
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
-    });
-};
-
 

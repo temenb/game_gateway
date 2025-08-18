@@ -1,5 +1,4 @@
 import * as grpc from '@grpc/grpc-js';
-import {Request, Response} from 'express';
 import * as AuthGrpc from '../../generated/auth';
 import {Empty} from "../../generated/google/protobuf/empty";
 import config from '../../config/config';

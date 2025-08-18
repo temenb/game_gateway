@@ -8,63 +8,66 @@ export const profileClient = new ProfileGrpc.ProfileClient(
     grpc.credentials.createInsecure()
 );
 
-export const health = () => {
+export const health = (): Promise<ProfileGrpc.HealthReport> => {
 
-    const grpcRequest: ProfileGrpc.Empty = { };
+    const grpcRequest: ProfileGrpc.Empty = {};
 
-    profileClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.HealthReport) => {
-        if (err || !grpcResponse) {
-            logger.error('gRPC error:', err);
+    return new Promise((resolve, reject) => {
+        profileClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.HealthReport) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
+            resolve(grpcResponse);
+        });
     });
 };
 
-export const status = () => {
+export const status = (): Promise<ProfileGrpc.StatusInfo> => {
 
-    const grpcRequest: ProfileGrpc.Empty = { };
+    const grpcRequest: ProfileGrpc.Empty = {};
 
-    profileClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.StatusInfo) => {
-        if (err || !grpcResponse) {
-            logger.error('gRPC error:', err);
+    return new Promise((resolve, reject) => {
+        profileClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.StatusInfo) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
+            resolve(grpcResponse);
+        });
     });
 };
 
-export const livez = () => {
+export const livez = (): Promise<ProfileGrpc.LiveStatus> => {
 
-    const grpcRequest: ProfileGrpc.Empty = { };
+    const grpcRequest: ProfileGrpc.Empty = {};
 
-    profileClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.LiveStatus) => {
-        if (err || !grpcResponse) {
-            logger.error('gRPC error:', err);
+    return new Promise((resolve, reject) => {
+        profileClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.LiveStatus) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
+            resolve(grpcResponse);
+        });
     });
 };
 
-export const readyz = () => {
+export const readyz = (): Promise<ProfileGrpc.ReadyStatus> => {
 
-    const grpcRequest: ProfileGrpc.Empty = { };
+    const grpcRequest: ProfileGrpc.Empty = {};
 
-    profileClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.ReadyStatus) => {
-        if (err || !grpcResponse) {
-            logger.error('gRPC error:', err);
+    return new Promise((resolve, reject) => {
+        profileClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.ReadyStatus) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
 
-            throw Error('Internal gRPC error');
-        }
-
-        return grpcResponse;
+            resolve(grpcResponse);
+        });
     });
 };
-
