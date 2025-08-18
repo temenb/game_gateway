@@ -73,11 +73,6 @@ export interface RefreshTokensRequest {
   token: string;
 }
 
-export interface RefreshTokensResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
 export interface LogoutRequest {
   userId: string;
 }
@@ -871,82 +866,6 @@ export const RefreshTokensRequest: MessageFns<RefreshTokensRequest> = {
   },
 };
 
-function createBaseRefreshTokensResponse(): RefreshTokensResponse {
-  return { accessToken: "", refreshToken: "" };
-}
-
-export const RefreshTokensResponse: MessageFns<RefreshTokensResponse> = {
-  encode(message: RefreshTokensResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.accessToken !== "") {
-      writer.uint32(10).string(message.accessToken);
-    }
-    if (message.refreshToken !== "") {
-      writer.uint32(18).string(message.refreshToken);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): RefreshTokensResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRefreshTokensResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.accessToken = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.refreshToken = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RefreshTokensResponse {
-    return {
-      accessToken: isSet(object.accessToken) ? globalThis.String(object.accessToken) : "",
-      refreshToken: isSet(object.refreshToken) ? globalThis.String(object.refreshToken) : "",
-    };
-  },
-
-  toJSON(message: RefreshTokensResponse): unknown {
-    const obj: any = {};
-    if (message.accessToken !== "") {
-      obj.accessToken = message.accessToken;
-    }
-    if (message.refreshToken !== "") {
-      obj.refreshToken = message.refreshToken;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<RefreshTokensResponse>): RefreshTokensResponse {
-    return RefreshTokensResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<RefreshTokensResponse>): RefreshTokensResponse {
-    const message = createBaseRefreshTokensResponse();
-    message.accessToken = object.accessToken ?? "";
-    message.refreshToken = object.refreshToken ?? "";
-    return message;
-  },
-};
-
 function createBaseLogoutRequest(): LogoutRequest {
   return { userId: "" };
 }
@@ -1250,9 +1169,8 @@ export const AuthService = {
     responseStream: false,
     requestSerialize: (value: RefreshTokensRequest): Buffer => Buffer.from(RefreshTokensRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): RefreshTokensRequest => RefreshTokensRequest.decode(value),
-    responseSerialize: (value: RefreshTokensResponse): Buffer =>
-      Buffer.from(RefreshTokensResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): RefreshTokensResponse => RefreshTokensResponse.decode(value),
+    responseSerialize: (value: AuthResponse): Buffer => Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): AuthResponse => AuthResponse.decode(value),
   },
   forgotPassword: {
     path: "/auth.Auth/ForgotPassword",
@@ -1315,7 +1233,7 @@ export interface AuthServer extends UntypedServiceImplementation {
   register: handleUnaryCall<RegisterRequest, AuthResponse>;
   login: handleUnaryCall<LoginRequest, AuthResponse>;
   logout: handleUnaryCall<LogoutRequest, LogoutResponse>;
-  refreshTokens: handleUnaryCall<RefreshTokensRequest, RefreshTokensResponse>;
+  refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
   forgotPassword: handleUnaryCall<ForgotPasswordRequest, Empty1>;
   resetPassword: handleUnaryCall<ResetPasswordRequest, AuthResponse>;
   health: handleUnaryCall<Empty, HealthReport>;
@@ -1369,18 +1287,18 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   refreshTokens(
     request: RefreshTokensRequest,
-    callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   refreshTokens(
     request: RefreshTokensRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   refreshTokens(
     request: RefreshTokensRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: RefreshTokensResponse) => void,
+    callback: (error: ServiceError | null, response: AuthResponse) => void,
   ): ClientUnaryCall;
   forgotPassword(
     request: ForgotPasswordRequest,

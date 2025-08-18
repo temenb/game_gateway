@@ -1,19 +1,19 @@
 import { Router } from 'express';
-import * as authClient from '../grpc/clients/auth.client';
+import * as authService from '../services/auth.service';
 
 const router = Router();
 
-router.post('/register', authClient.register);
-router.post('/login', authClient.login);
-router.post('/logout', authClient.logout);
-router.post('/refresh-tokens', authClient.refreshTokens);
-router.post('/forgot-password', authClient.forgotPassword);
-router.post('/reset-password', authClient.resetPassword);
+router.post('/register', authService.register);
+router.post('/login', authService.login);
+router.post('/logout', authService.logout);
+router.post('/refresh-tokens', authService.refreshTokens);
+router.post('/forgot-password', authService.forgotPassword);
+router.post('/reset-password', authService.resetPassword);
 
-router.get('/health', authClient.health);
-router.get('/status', authClient.status);
-router.get('/livez', authClient.livez);
-router.get('/readyz', authClient.readyz);
+router.get('/health', authService.health);
+router.get('/status', authService.status);
+router.get('/livez', authService.livez);
+router.get('/readyz', authService.readyz);
 
 export default router;
 

@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-
+import * as ShipClient from '../grpc/clients/ship.client';
 
 export const health = async (req: Request, res: Response) => {
     res.send('Ok');
@@ -15,4 +15,4 @@ export const livez = async (req: Request, res: Response) => {
 
 export const readyz = async (req: Request, res: Response) => {
     res.send('In progress');
-};
+}

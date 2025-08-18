@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-
+import * as ProfileClient from '../grpc/clients/profile.client';
 
 export const health = async (req: Request, res: Response) => {
     res.send('Ok');

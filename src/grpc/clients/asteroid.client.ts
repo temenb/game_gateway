@@ -1,6 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 import { Request, Response } from 'express';
-import * as AstroidGrpc from '../../generated/asteroid';
+import * as AsteroidGrpc from '../../generated/asteroid';
 import config from '../../config/config';
 
 
@@ -43,19 +43,64 @@ export const listGalaxies = (req: Request, res: Response) => {
     });
 };
 
-export const health = (req: Request, res: Response) => {
-    res.send('In progress');
+export const health = () => {
+
+    const grpcRequest: AsteroidGrpc.Empty = { };
+
+    asteroidClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.HealthReport) => {
+        if (err || !grpcResponse) {
+            console.error('gRPC error:', err);
+
+            throw Error('Internal gRPC error');
+        }
+
+        return grpcResponse;
+    });
 };
 
-export const status = (req: Request, res: Response) => {
-    res.send('In progress');
+export const status = () => {
+
+    const grpcRequest: AsteroidGrpc.Empty = { };
+
+    asteroidClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.StatusInfo) => {
+        if (err || !grpcResponse) {
+            console.error('gRPC error:', err);
+
+            throw Error('Internal gRPC error');
+        }
+
+        return grpcResponse;
+    });
 };
 
-export const livez = (req: Request, res: Response) => {
-    res.send('In progress');
+export const livez = () => {
+
+    const grpcRequest: AsteroidGrpc.Empty = { };
+
+    asteroidClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.LiveStatus) => {
+        if (err || !grpcResponse) {
+            console.error('gRPC error:', err);
+
+            throw Error('Internal gRPC error');
+        }
+
+        return grpcResponse;
+    });
 };
 
-export const readyz = (req: Request, res: Response) => {
-    res.send('In progress');
+export const readyz = () => {
+
+    const grpcRequest: AsteroidGrpc.Empty = { };
+
+    asteroidClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AsteroidGrpc.ReadyStatus) => {
+        if (err || !grpcResponse) {
+            console.error('gRPC error:', err);
+
+            throw Error('Internal gRPC error');
+        }
+
+        return grpcResponse;
+    });
 };
+
 

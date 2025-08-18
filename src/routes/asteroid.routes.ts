@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import * as asteroidClient from '../grpc/clients/asteroid.client';
+import * as asteroidService from '../services/asteroid.service';
 
 const router = Router();
 
-router.post('/list', asteroidClient.list);
-// router.post('/view', asteroidClient.view);
-router.post('/list-galaxies', asteroidClient.listGalaxies);
-router.get('/health', asteroidClient.health);
-router.get('/status', asteroidClient.status);
-router.get('/livez', asteroidClient.livez);
-router.get('/readyz', asteroidClient.readyz);
+// router.post('/list', asteroidService.list);
+// router.post('/view', asteroidService.view);
+// router.post('/list-galaxies', asteroidService.listGalaxies);
+router.get('/health', asteroidService.health);
+router.get('/status', asteroidService.status);
+router.get('/livez', asteroidService.livez);
+router.get('/readyz', asteroidService.readyz);
 
 
 export default router;

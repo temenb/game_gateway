@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import * as shipClient from '../grpc/clients/ship.client';
+import * as shipService from '../services/ship.service';
 
 const router = Router();
 
-// router.post('/list', shipClient.List);
-// router.post('/attack-asteroid', shipClient.AttackAsteroid);
-router.get('/health', shipClient.health);
-router.get('/status', shipClient.status);
-router.get('/livez', shipClient.livez);
-router.get('/readyz', shipClient.readyz);
+// router.post('/list', shipService.List);
+// router.post('/attack-asteroid', shipService.AttackAsteroid);
+router.get('/health', shipService.health);
+router.get('/status', shipService.status);
+router.get('/livez', shipService.livez);
+router.get('/readyz', shipService.readyz);
 
 export default router;

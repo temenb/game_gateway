@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import * as AsteroidClient from '../grpc/clients/asteroid.client';
 
 
 export const health = async (req: Request, res: Response) => {

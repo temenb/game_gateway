@@ -1,134 +1,173 @@
 import * as grpc from '@grpc/grpc-js';
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import * as AuthGrpc from '../../generated/auth';
 import {Empty} from "../../generated/google/protobuf/empty";
 import config from '../../config/config';
 
 export const authClient = new AuthGrpc.AuthClient(
-    config.authServiceUrl,
-    grpc.credentials.createInsecure()
+  config.authServiceUrl,
+  grpc.credentials.createInsecure()
 );
 
-export const register = (req: Request, res: Response) => {
-  const { email, password } = req.body;
+export const register = (email: string, password: string): Promise<AuthGrpc.AuthResponse> => {
+  const grpcRequest: AuthGrpc.RegisterRequest = {email, password};
 
-  const grpcRequest: AuthGrpc.RegisterRequest = { email, password };
+  return new Promise((resolve, reject) => {
+    authClient.register(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+        return reject(new Error('Internal gRPC error'));
+      }
 
-  authClient.register(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
-    if (err || !grpcResponse) {
-      console.error('gRPC error:', err);
-      return res.status(500).json({ error: 'Internal gRPC error' });
-    }
-
-    res.status(201).json({
-      accessToken: grpcResponse.accessToken,
-      refreshToken: grpcResponse.refreshToken,
-      userId: grpcResponse.userId,
+      resolve(grpcResponse);
     });
   });
 };
 
-export const login = (req: Request, res: Response) => {
-  const { email, password } = req.body;
+export const login = (email: string, password: string): Promise<AuthGrpc.AuthResponse> => {
+  const grpcRequest: AuthGrpc.LoginRequest = {email, password};
 
-  const grpcRequest: AuthGrpc.LoginRequest = { email, password };
+  return new Promise((resolve, reject) => {
+    authClient.login(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+        throw Error('Internal gRPC error');
+      }
 
-  authClient.login(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
-    if (err || !grpcResponse) {
-      console.error('gRPC error:', err);
-      return res.status(500).json({ error: 'Internal gRPC error' });
-    }
-
-    res.json({
-      accessToken: grpcResponse.accessToken,
-      refreshToken: grpcResponse.refreshToken,
-      userId: grpcResponse.userId,
+      resolve(grpcResponse);
     });
   });
 };
 
-export const refreshTokens = (req: Request, res: Response) => {
-  const { token } = req.body;
+export const refreshTokens = (token: string): Promise<AuthGrpc.AuthResponse> => {
+  const grpcRequest: AuthGrpc.RefreshTokensRequest = {token};
 
-  const grpcRequest: AuthGrpc.RefreshTokensRequest = { token };
+  return new Promise((resolve, reject) => {
+    authClient.refreshTokens(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+        throw Error('Internal gRPC error');
+      }
 
-  authClient.refreshTokens(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.RefreshTokensResponse) => {
-    if (err || !grpcResponse) {
-      console.error('gRPC error:', err);
-      return res.status(500).json({ error: 'Internal gRPC error' });
-    }
-
-    res.json({
-      accessToken: grpcResponse.accessToken,
-      refreshToken: grpcResponse.refreshToken,
+      resolve(grpcResponse);
     });
   });
 };
 
-export const logout = (req: Request, res: Response) => {
-  const { userId } = req.body;
+export const logout = (userId: string): Promise<AuthGrpc.LogoutResponse> => {
 
-  const grpcRequest: AuthGrpc.LogoutRequest = { userId };
+  const grpcRequest: AuthGrpc.LogoutRequest = {userId};
 
-  authClient.logout(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.LogoutResponse) => {
-    if (err || !grpcResponse) {
-      console.error('gRPC error:', err);
-      return res.status(500).json({ error: 'Internal gRPC error' });
-    }
+  return new Promise((resolve, reject) => {
+    authClient.logout(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.LogoutResponse) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+        throw Error('Internal gRPC error');
+      }
 
-    res.json({
-      success: grpcResponse.success,
-      message: grpcResponse.message,
+      resolve(grpcResponse);
+
     });
   });
 };
 
-export const forgotPassword = (req: Request, res: Response) => {
-  const { email } = req.body;
+export const forgotPassword = (email: string): Promise<boolean> => {
 
-  const grpcRequest: AuthGrpc.ForgotPasswordRequest = { email };
+  const grpcRequest: AuthGrpc.ForgotPasswordRequest = {email};
 
-  authClient.forgotPassword(grpcRequest, (err: grpc.ServiceError | null, response?: Empty) => {
-    if (err) {
-      console.error('gRPC error:', err);
-      return res.status(500).json({ error: 'Internal gRPC error' });
-    }
+  return new Promise((resolve, reject) => {
+    authClient.forgotPassword(grpcRequest, (err: grpc.ServiceError | null, response?: Empty) => {
+      if (err) {
+        console.error('gRPC error:', err);
 
-    res.status(200).json({ success: true });
-  });
-};
+        throw Error('Internal gRPC error');
+      }
 
-export const resetPassword = (req: Request, res: Response) => {
-  const { token, newPassword } = req.body;
-
-  const grpcRequest: AuthGrpc.ResetPasswordRequest = { token, newPassword };
-
-  authClient.resetPassword(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
-    if (err || !grpcResponse) {
-      console.error('gRPC error:', err);
-      return res.status(500).json({ error: 'Internal gRPC error' });
-    }
-
-    res.json({
-      accessToken: grpcResponse.accessToken,
-      refreshToken: grpcResponse.refreshToken,
-      userId: grpcResponse.userId,
+      resolve(true);
     });
   });
 };
 
-export const health = (req: Request, res: Response) => {
-  res.send('In progress');
+export const resetPassword = (token: string, newPassword: string): Promise<AuthGrpc.AuthResponse> => {
+  const grpcRequest: AuthGrpc.ResetPasswordRequest = {token, newPassword};
+
+  return new Promise((resolve, reject) => {
+    authClient.resetPassword(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+
+        throw Error('Internal gRPC error');
+      }
+
+      resolve(grpcResponse);
+    });
+  });
 };
 
-export const status = (req: Request, res: Response) => {
-  res.send('In progress');
+export const health = (): Promise<AuthGrpc.HealthReport> => {
+
+  const grpcRequest: AuthGrpc.Empty = {};
+
+  return new Promise((resolve, reject) => {
+    authClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.HealthReport) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+
+        throw Error('Internal gRPC error');
+      }
+
+      resolve(grpcResponse);
+    });
+  });
 };
 
-export const livez = (req: Request, res: Response) => {
-  res.send('In progress');
+export const status = (): Promise<AuthGrpc.StatusInfo> => {
+
+  const grpcRequest: AuthGrpc.Empty = {};
+
+  return new Promise((resolve, reject) => {
+    authClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.StatusInfo) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+
+        throw Error('Internal gRPC error');
+      }
+
+      resolve(grpcResponse);
+    });
+  });
 };
 
-export const readyz = (req: Request, res: Response) => {
-  res.send('In progress');
+export const livez = (): Promise<AuthGrpc.LiveStatus> => {
+
+  const grpcRequest: AuthGrpc.Empty = {};
+
+  return new Promise((resolve, reject) => {
+    authClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.LiveStatus) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+
+        throw Error('Internal gRPC error');
+      }
+
+      resolve(grpcResponse);
+    });
+  });
+};
+
+export const readyz = (): Promise<AuthGrpc.ReadyStatus> => {
+
+  const grpcRequest: AuthGrpc.Empty = {};
+
+  return new Promise((resolve, reject) => {
+    authClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.ReadyStatus) => {
+      if (err || !grpcResponse) {
+        console.error('gRPC error:', err);
+
+        throw Error('Internal gRPC error');
+      }
+
+      resolve(grpcResponse);
+    });
+  });
 };
