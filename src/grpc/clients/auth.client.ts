@@ -5,7 +5,7 @@ import {Empty} from "../../generated/google/protobuf/empty";
 import config from '../../config/config';
 
 export const authClient = new AuthGrpc.AuthClient(
-  config.authServiceUrl,
+  config.authServiceUrl!,
   grpc.credentials.createInsecure()
 );
 
@@ -31,7 +31,7 @@ export const login = (email: string, password: string): Promise<AuthGrpc.AuthRes
     authClient.login(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -46,7 +46,7 @@ export const refreshTokens = (token: string): Promise<AuthGrpc.AuthResponse> => 
     authClient.refreshTokens(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -62,7 +62,7 @@ export const logout = (userId: string): Promise<AuthGrpc.LogoutResponse> => {
     authClient.logout(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.LogoutResponse) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -79,8 +79,7 @@ export const forgotPassword = (email: string): Promise<boolean> => {
     authClient.forgotPassword(grpcRequest, (err: grpc.ServiceError | null, response?: Empty) => {
       if (err) {
         console.error('gRPC error:', err);
-
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(true);
@@ -95,8 +94,7 @@ export const resetPassword = (token: string, newPassword: string): Promise<AuthG
     authClient.resetPassword(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.AuthResponse) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -112,8 +110,7 @@ export const health = (): Promise<AuthGrpc.HealthReport> => {
     authClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.HealthReport) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -129,8 +126,7 @@ export const status = (): Promise<AuthGrpc.StatusInfo> => {
     authClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.StatusInfo) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -146,8 +142,7 @@ export const livez = (): Promise<AuthGrpc.LiveStatus> => {
     authClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.LiveStatus) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);
@@ -163,8 +158,7 @@ export const readyz = (): Promise<AuthGrpc.ReadyStatus> => {
     authClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: AuthGrpc.ReadyStatus) => {
       if (err || !grpcResponse) {
         console.error('gRPC error:', err);
-
-        throw Error('Internal gRPC error');
+        return reject(new Error('Internal gRPC error'));
       }
 
       resolve(grpcResponse);

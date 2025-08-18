@@ -3,7 +3,7 @@ import * as ProfileGrpc from '../../generated/profile';
 import config from '../../config/config';
 
 export const profileClient = new ProfileGrpc.ProfileClient(
-    config.profileServiceUrl,
+    config.profileServiceUrl!,
     grpc.credentials.createInsecure()
 );
 
