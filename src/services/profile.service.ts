@@ -1,5 +1,21 @@
 import {Request, Response} from "express";
 import * as ProfileClient from "../grpc/clients/profile.client";
+import getUserId from '../utils/getUserId';
+import logger from "../utils/logger";
+
+export const getProfile = async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+
+    try {
+        const response = await ProfileClient.getProfile(userId);
+        res.status(200).json(response);
+    } catch (err) {
+        if (err instanceof Error) {
+            return res.status(500).json({ error: err.message });
+        }
+        return res.status(500).json({ error: 'Unknown error' });
+    }
+};
 
 export const health = async (req: Request, res: Response) => {
     try {

@@ -1,4 +1,5 @@
 FROM node:22
+ENV NODE_ENV=development
 
 WORKDIR /usr/src/app
 
@@ -17,7 +18,8 @@ RUN mkdir -p /usr/src/app/node_modules /usr/src/app/dist \
 # Переключаемся на node
 USER node
 
-RUN npm ci
+#RUN npm ci
+RUN npm i
 
 # Билдим проект
 RUN npm run build

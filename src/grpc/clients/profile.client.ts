@@ -8,6 +8,21 @@ export const profileClient = new ProfileGrpc.ProfileClient(
     grpc.credentials.createInsecure()
 );
 
+export const getProfile = (userId: string): Promise<ProfileGrpc.ViewRequest> => {
+    const grpcRequest: ProfileGrpc.ViewRequest = { userId };
+
+    return new Promise((resolve, reject) => {
+        profileClient.view(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.ProfileResponse) => {
+            if (err || !grpcResponse) {
+                logger.error('gRPC error:', err);
+                return reject(new Error('Internal gRPC error'));
+            }
+
+            resolve(grpcResponse);
+        });
+    });
+};
+
 export const health = (): Promise<ProfileGrpc.HealthReport> => {
 
     const grpcRequest: ProfileGrpc.Empty = {};
