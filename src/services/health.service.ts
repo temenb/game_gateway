@@ -8,20 +8,38 @@ import {profileClient} from '../grpc/clients/profile.client';
 const startedAt = Date.now();
 
 export const health = async (req: Request, res: Response) => {
-  const authOk = await checkGrpcHealth(authClient);
-  const profileOk = await checkGrpcHealth(profileClient);
-  const asteroidOk = await checkGrpcHealth(asteroidClient);
-  const shipOk = await checkGrpcHealth(shipClient);
+  const full = req.query.full;
+  const callback = full?getGrpcReport: checkGrpcHealth;
+  const authReport = await callback(authClient);
+  const profileReport = await callback(profileClient);
+  const asteroidReport = await callback(asteroidClient);
+  const shipReport = await callback(shipClient);
+  let healthy;
+  if (full) {
+    healthy = authReport.healthy && profileReport.healthy && asteroidReport.healthy && shipReport.healthy;
+  } else {
+    healthy = authReport && profileReport && asteroidReport && shipReport;
+  }
+
   res.status(200).send({
-    healthy: authOk && profileOk && asteroidOk && shipOk,
+    healthy: healthy,
     map: {
-      auth: authOk ? 'ok' : 'fail',
-      profile: profileOk ? 'ok' : 'fail',
-      asteroid: asteroidOk ? 'ok' : 'fail',
-      ship: shipOk ? 'ok' : 'fail',
+      auth: authReport,
+      profile: profileReport,
+      asteroid: asteroidReport,
+      ship: shipReport,
     }
   });
 }
+
+const getGrpcReport = (client: any): Promise<any> => {
+  return new Promise((resolve) => {
+    client.health({}, (err: any, res: any) => {
+      resolve(!err && res);
+    });
+  });
+};
+
 
 const checkGrpcHealth = (client: any): Promise<boolean> => {
   return new Promise((resolve) => {
