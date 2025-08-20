@@ -8,8 +8,8 @@ export const profileClient = new ProfileGrpc.ProfileClient(
     grpc.credentials.createInsecure()
 );
 
-export const getProfile = (userId: string): Promise<ProfileGrpc.ViewRequest> => {
-    const grpcRequest: ProfileGrpc.ViewRequest = { userId };
+export const getProfile = (ownerId: string): Promise<ProfileGrpc.ViewRequest> => {
+    const grpcRequest: ProfileGrpc.ViewRequest = { ownerId };
 
     return new Promise((resolve, reject) => {
         profileClient.view(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ProfileGrpc.ProfileResponse) => {
