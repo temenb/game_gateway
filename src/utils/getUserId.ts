@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
 import { Request } from 'express';
-import logger from "./logger";
+import logger from "@shared/logger";
 
 const JWT_SECRET = config.jwtAccessSecret;
 

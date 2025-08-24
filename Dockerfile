@@ -23,6 +23,7 @@ RUN corepack enable && pnpm install
 USER node
 
 RUN pnpm --filter @shared/logger build
+RUN pnpm --filter gateway build
 
 EXPOSE 3000
 
