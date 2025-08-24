@@ -3,28 +3,26 @@ ENV NODE_ENV=development
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node pnpm-workspace.yaml ./
-COPY --chown=node:node shared/logger/ ./hared/logger/
+COPY pnpm-workspace.yaml ./
 
-COPY --chown=node:node services/gateway/package*.json ./services/gateway/
-COPY --chown=node:node services/gateway/pnpm-*.json ./services/gateway/
-COPY --chown=node:node services/gateway/jest.config.js ./services/gateway/
-COPY --chown=node:node services/gateway/__tests__ ./services/gateway/__tests__
+COPY shared/logger/ ./shared/logger/
 
+COPY services/gateway/package*.json ./services/gateway/
+COPY services/gateway/pnpm-*.json ./services/gateway/
+COPY services/gateway/jest.config.js ./services/gateway/
+COPY services/gateway/tsconfig.json ./services/gateway/
+COPY services/gateway/src ./services/gateway/src/
+COPY services/gateway/__tests__ ./services/gateway/__tests__/
 
 USER root
 RUN mkdir -p /usr/src/app/node_modules /usr/src/app/dist \
   && chown -R node:node /usr/src/app
 
-
-
-
-RUN pnpm install --filter gateway...
+RUN corepack enable && pnpm install
 
 USER node
-RUN pnpm install --filter @shared/logger...
 
-
+RUN pnpm --filter @shared/logger build
 
 EXPOSE 3000
 
