@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as AsteroidGrpc from '../../generated/asteroid';
 import config from '../../config/config';
-import { logger } from '../../utils/logger';
+import { logger } from '@shared/logger';
 
 
 export const asteroidClient = new AsteroidGrpc.AsteroidClient(

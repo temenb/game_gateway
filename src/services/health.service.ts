@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {logger} from '../utils/logger';
+import {logger} from '@shared/logger';
 import {authClient} from '../grpc/clients/auth.client';
 import {asteroidClient} from '../grpc/clients/asteroid.client';
 import {shipClient} from '../grpc/clients/ship.client';

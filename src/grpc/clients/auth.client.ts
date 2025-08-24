@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../../generated/auth';
 import {Empty} from "../../generated/google/protobuf/empty";
 import config from '../../config/config';
-import { logger } from '../../utils/logger';
+import { logger } from '@shared/logger';
 
 export const authClient = new AuthGrpc.AuthClient(
   config.serviceAuthUrl!,

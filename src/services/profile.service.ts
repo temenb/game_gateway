@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import * as ProfileClient from "../grpc/clients/profile.client";
 import getUserId from '../utils/getUserId';
-import logger from "../utils/logger";
+import logger from "@shared/logger";
 
 export const getProfile = async (req: Request, res: Response) => {
     const userId = getUserId(req);

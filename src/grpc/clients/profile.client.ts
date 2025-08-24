@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as ProfileGrpc from '../../generated/profile';
 import config from '../../config/config';
-import { logger } from '../../utils/logger';
+import { logger } from '@shared/logger';
 
 export const profileClient = new ProfileGrpc.ProfileClient(
     config.serviceProfileUrl!,

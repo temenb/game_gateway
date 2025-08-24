@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as ShipGrpc from '../../generated/ship';
 import config from '../../config/config';
-import { logger } from '../../utils/logger';
+import { logger } from '@shared/logger';
 
 export const shipClient = new ShipGrpc.ShipClient(
     config.serviceShipUrl,
