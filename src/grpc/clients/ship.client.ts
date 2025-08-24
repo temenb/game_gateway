@@ -4,7 +4,7 @@ import config from '../../config/config';
 import { logger } from '../../utils/logger';
 
 export const shipClient = new ShipGrpc.ShipClient(
-    config.shipServiceUrl,
+    config.serviceShipUrl,
     grpc.credentials.createInsecure()
 );
 

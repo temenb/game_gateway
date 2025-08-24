@@ -5,7 +5,7 @@ import { logger } from '../../utils/logger';
 
 
 export const asteroidClient = new AsteroidGrpc.AsteroidClient(
-    config.asteroidServiceUrl,
+    config.serviceAsteroidUrl,
     grpc.credentials.createInsecure()
 );
 

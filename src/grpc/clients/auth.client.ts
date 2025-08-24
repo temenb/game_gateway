@@ -5,7 +5,7 @@ import config from '../../config/config';
 import { logger } from '../../utils/logger';
 
 export const authClient = new AuthGrpc.AuthClient(
-  config.authServiceUrl!,
+  config.serviceAuthUrl!,
   grpc.credentials.createInsecure()
 );
 

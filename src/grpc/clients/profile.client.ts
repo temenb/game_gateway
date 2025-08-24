@@ -4,7 +4,7 @@ import config from '../../config/config';
 import { logger } from '../../utils/logger';
 
 export const profileClient = new ProfileGrpc.ProfileClient(
-    config.profileServiceUrl!,
+    config.serviceProfileUrl!,
     grpc.credentials.createInsecure()
 );
 

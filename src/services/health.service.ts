@@ -16,7 +16,10 @@ export const health = async (req: Request, res: Response) => {
   const shipReport = await callback(shipClient);
   let healthy;
   if (full) {
-    healthy = authReport.healthy && profileReport.healthy && asteroidReport.healthy && shipReport.healthy;
+    healthy = authReport && authReport.healthy
+      && profileReport && profileReport.healthy
+      && asteroidReport && asteroidReport.healthy
+      && shipReport && shipReport.healthy;
   } else {
     healthy = authReport && profileReport && asteroidReport && shipReport;
   }
