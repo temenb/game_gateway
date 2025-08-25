@@ -3,20 +3,18 @@ ENV NODE_ENV=development
 
 WORKDIR /usr/src/app
 
-COPY pnpm-workspace.yaml ./
-
 COPY shared/logger/ ./shared/logger/
-
+COPY turbo.json  ./
+COPY package.json ./
+COPY pnpm-workspace.yaml ./
 COPY services/gateway/package*.json ./services/gateway/
-COPY services/gateway/pnpm-*.json ./services/gateway/
 COPY services/gateway/jest.config.js ./services/gateway/
 COPY services/gateway/tsconfig.json ./services/gateway/
 COPY services/gateway/src ./services/gateway/src/
 COPY services/gateway/__tests__ ./services/gateway/__tests__/
 
 USER root
-RUN mkdir -p /usr/src/app/node_modules /usr/src/app/dist \
-  && chown -R node:node /usr/src/app
+RUN chown -R node:node /usr/src/app
 
 RUN corepack enable && pnpm install
 
