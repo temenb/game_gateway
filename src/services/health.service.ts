@@ -4,6 +4,7 @@ import {authClient} from '../grpc/clients/auth.client';
 import {asteroidClient} from '../grpc/clients/asteroid.client';
 import {shipClient} from '../grpc/clients/ship.client';
 import {profileClient} from '../grpc/clients/profile.client';
+import {engineClient} from '../grpc/clients/engine.client';
 
 const startedAt = Date.now();
 
@@ -14,16 +15,18 @@ export const health = async (req: Request, res: Response) => {
   const profileReport = await callback(profileClient);
   const asteroidReport = await callback(asteroidClient);
   const shipReport = await callback(shipClient);
+  const engineReport = await callback(engineClient);
   let healthy;
   if (full) {
     healthy = authReport && authReport.healthy
       && profileReport && profileReport.healthy
       && asteroidReport && asteroidReport.healthy
+      && engineReport && engineReport.healthy
       && shipReport && shipReport.healthy;
   } else {
-    healthy = authReport && profileReport && asteroidReport && shipReport;
+    healthy = authReport && profileReport && asteroidReport && shipReport && engineReport;
   }
-
+  logger.log(shipReport);
   res.status(200).send({
     healthy: healthy,
     map: {
@@ -31,6 +34,7 @@ export const health = async (req: Request, res: Response) => {
       profile: profileReport,
       asteroid: asteroidReport,
       ship: shipReport,
+      engine: engineReport,
     }
   });
 }
@@ -38,6 +42,9 @@ export const health = async (req: Request, res: Response) => {
 const getGrpcReport = (client: any): Promise<any> => {
   return new Promise((resolve) => {
     client.health({}, (err: any, res: any) => {
+      console.log('gRPC callback triggered');
+      console.log('err:', err);
+      console.log('res:', res);
       resolve(!err && res);
     });
   });
@@ -47,6 +54,9 @@ const getGrpcReport = (client: any): Promise<any> => {
 const checkGrpcHealth = (client: any): Promise<boolean> => {
   return new Promise((resolve) => {
     client.health({}, (err: any, res: { healthy?: boolean }) => {
+      console.log('gRPC callback triggered');
+      console.log('err:', err);
+      console.log('res:', res);
       resolve(!err && res?.healthy === true);
     });
   });

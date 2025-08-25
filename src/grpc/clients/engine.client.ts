@@ -1,18 +1,19 @@
 import * as grpc from '@grpc/grpc-js';
-import * as ShipGrpc from '../../generated/ship';
+import * as EngineGrpc from '../../generated/engine';
 import config from '../../config/config';
 import { logger } from '@shared/logger';
 
-export const shipClient = new ShipGrpc.ShipClient(
-    config.serviceShipUrl,
+export const engineClient = new EngineGrpc.EngineClient(
+    config.serviceEngineUrl!,
     grpc.credentials.createInsecure()
 );
 
-export const health = (): Promise<ShipGrpc.HealthReport> => {
+export const health = (): Promise<EngineGrpc.HealthReport> => {
 
-    const grpcRequest: ShipGrpc.Empty = {};
+    const grpcRequest: EngineGrpc.Empty = {};
+
     return new Promise((resolve, reject) => {
-        shipClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ShipGrpc.HealthReport) => {
+        engineClient.health(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: EngineGrpc.HealthReport) => {
             if (err || !grpcResponse) {
                 logger.error('gRPC error:', err);
                 return reject(new Error('Internal gRPC error'));
@@ -23,12 +24,12 @@ export const health = (): Promise<ShipGrpc.HealthReport> => {
     });
 };
 
-export const status = (): Promise<ShipGrpc.StatusInfo> => {
+export const status = (): Promise<EngineGrpc.StatusInfo> => {
 
-    const grpcRequest: ShipGrpc.Empty = {};
+    const grpcRequest: EngineGrpc.Empty = {};
 
     return new Promise((resolve, reject) => {
-        shipClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ShipGrpc.StatusInfo) => {
+        engineClient.status(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: EngineGrpc.StatusInfo) => {
             if (err || !grpcResponse) {
                 logger.error('gRPC error:', err);
                 return reject(new Error('Internal gRPC error'));
@@ -39,12 +40,12 @@ export const status = (): Promise<ShipGrpc.StatusInfo> => {
     });
 };
 
-export const livez = (): Promise<ShipGrpc.LiveStatus> => {
+export const livez = (): Promise<EngineGrpc.LiveStatus> => {
 
-    const grpcRequest: ShipGrpc.Empty = {};
+    const grpcRequest: EngineGrpc.Empty = {};
 
     return new Promise((resolve, reject) => {
-        shipClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ShipGrpc.LiveStatus) => {
+        engineClient.livez(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: EngineGrpc.LiveStatus) => {
             if (err || !grpcResponse) {
                 logger.error('gRPC error:', err);
                 return reject(new Error('Internal gRPC error'));
@@ -55,12 +56,12 @@ export const livez = (): Promise<ShipGrpc.LiveStatus> => {
     });
 };
 
-export const readyz = (): Promise<ShipGrpc.ReadyStatus> => {
+export const readyz = (): Promise<EngineGrpc.ReadyStatus> => {
 
-    const grpcRequest: ShipGrpc.Empty = {};
+    const grpcRequest: EngineGrpc.Empty = {};
 
     return new Promise((resolve, reject) => {
-        shipClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: ShipGrpc.ReadyStatus) => {
+        engineClient.readyz(grpcRequest, (err: grpc.ServiceError | null, grpcResponse?: EngineGrpc.ReadyStatus) => {
             if (err || !grpcResponse) {
                 logger.error('gRPC error:', err);
                 return reject(new Error('Internal gRPC error'));

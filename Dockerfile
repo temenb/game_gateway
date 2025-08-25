@@ -21,9 +21,6 @@ RUN chown -R node:node /usr/src/app
 
 USER node
 
-RUN pnpm --filter @shared/logger build
-RUN pnpm --filter gateway build
-
 EXPOSE 3000
 
 CMD ["pnpm", "--filter", "gateway", "start"]
