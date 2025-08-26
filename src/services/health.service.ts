@@ -11,11 +11,19 @@ const startedAt = Date.now();
 export const health = async (req: Request, res: Response) => {
   const full = req.query.full;
   const callback = full?getGrpcReport: checkGrpcHealth;
-  const authReport = await callback(authClient);
-  const profileReport = await callback(profileClient);
-  const asteroidReport = await callback(asteroidClient);
-  const shipReport = await callback(shipClient);
-  const engineReport = await callback(engineClient);
+  const [
+    authReport,
+    profileReport,
+    asteroidReport,
+    shipReport,
+    engineReport,
+  ] = await Promise.all([
+    callback(authClient),
+    callback(profileClient),
+    callback(asteroidClient),
+    callback(shipClient),
+    callback(engineClient),
+  ]);
   let healthy;
   if (full) {
     healthy = authReport && authReport.healthy
@@ -26,7 +34,6 @@ export const health = async (req: Request, res: Response) => {
   } else {
     healthy = authReport && profileReport && asteroidReport && shipReport && engineReport;
   }
-  logger.log(shipReport);
   res.status(200).send({
     healthy: healthy,
     map: {
@@ -42,9 +49,9 @@ export const health = async (req: Request, res: Response) => {
 const getGrpcReport = (client: any): Promise<any> => {
   return new Promise((resolve) => {
     client.health({}, (err: any, res: any) => {
-      console.log('gRPC callback triggered');
-      console.log('err:', err);
-      console.log('res:', res);
+      // console.log('gRPC callback triggered');
+      // console.log('err:', err);
+      // console.log('res:', res);
       resolve(!err && res);
     });
   });
@@ -54,9 +61,9 @@ const getGrpcReport = (client: any): Promise<any> => {
 const checkGrpcHealth = (client: any): Promise<boolean> => {
   return new Promise((resolve) => {
     client.health({}, (err: any, res: { healthy?: boolean }) => {
-      console.log('gRPC callback triggered');
-      console.log('err:', err);
-      console.log('res:', res);
+      // console.log('gRPC callback triggered');
+      // console.log('err:', err);
+      // console.log('res:', res);
       resolve(!err && res?.healthy === true);
     });
   });

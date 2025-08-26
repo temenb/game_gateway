@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes';
 import profileRoutes from './routes/profile.routes';
 import shipRoutes from './routes/ship.routes';
 import asteroidRoutes from './routes/asteroid.routes';
+import engineRoutes from './routes/engine.routes';
 import {verifyToken} from "./middlewares/auth.middleware";
 import cookieParser from 'cookie-parser';
 import {publicPaths} from "./config/publicPaths.config";
@@ -32,6 +33,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/ship', shipRoutes);
 app.use('/asteroid', asteroidRoutes);
+app.use('/engine', engineRoutes);
 
 export default app;
 
