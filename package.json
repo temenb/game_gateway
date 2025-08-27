@@ -33,13 +33,13 @@
   "dependencies": {
     "@bufbuild/protobuf": "^2.6.3",
     "@grpc/grpc-js": "^1.13.4",
-    "@shared/logger": "workspace:*",
     "amqplib": "^0.10.8",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "@shared/logger": "workspace:*"
   }
 }
