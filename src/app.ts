@@ -1,3 +1,42 @@
+import dotenv from 'dotenv';
+import {ProfileService} from './generated/profile';
+import * as grpc from '@grpc/grpc-js';
+import * as profileHandler from "./grpc/handlers/profile.handler";
+import kafkaConfig, {createUserConsumerConfig} from "./config/kafka.config";
+import { createConsumer } from '@shared/kafka';
+import logger from '@shared/logger';
+import {userCreated} from "./utils/consumers";
+
+dotenv.config();
+
+const server = new grpc.Server();
+
+server.addService(ProfileService, {
+    upsert: profileHandler.upsert,
+    view: profileHandler.getProfile,
+    health: profileHandler.health,
+    status: profileHandler.status,
+    livez: profileHandler.livez,
+    readyz: profileHandler.readyz,
+});
+
+createConsumer(kafkaConfig, {
+    ...createUserConsumerConfig,
+    handler: userCreated,
+});
+
+export default server;
+
+
+
+
+
+
+
+
+
+
+
 import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -10,6 +49,7 @@ import engineRoutes from './routes/engine.routes';
 import {verifyToken} from "./middlewares/auth.middleware";
 import cookieParser from 'cookie-parser';
 import {publicPaths} from "./config/publicPaths.config";
+import {anonymousSignIn} from "./grpc/clients/auth.client";
 
 const app = express();
 app.use(express.json());
@@ -24,7 +64,7 @@ app.use(cookieParser());
 const withAuth = (req: Request, res: Response, next: NextFunction) => {
     const isPublic = publicPaths.some(path => req.path.startsWith(path));
     if (isPublic) return next();
-    return verifyToken(req, res, next);
+    return verifyToken(anonymousSignIn)(req, res, next)
 };
 app.use(withAuth);
 

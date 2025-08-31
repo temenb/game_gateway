@@ -76,6 +76,11 @@ export const register = (email: string, password: string): Promise<AuthGrpc.Auth
   return wrapGrpcCall((client, cb) => client.register(grpcRequest, cb));
 };
 
+export const anonymousSignIn = (): Promise<AuthGrpc.AuthResponse> => {
+  const grpcRequest: AuthGrpc.Empty = {};
+  return wrapGrpcCall((client, cb) => client.anonymousSignIn(grpcRequest, cb));
+};
+
 export const login = (email: string, password: string): Promise<AuthGrpc.AuthResponse> => {
   const grpcRequest: AuthGrpc.LoginRequest = {email, password};
   return wrapGrpcCall((client, cb) => client.login(grpcRequest, cb));
