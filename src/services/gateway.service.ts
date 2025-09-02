@@ -2,8 +2,6 @@ import {logger} from '@shared/logger';
 import * as profileClient from '../grpc/clients/profile.client';
 import * as engineClient from '../grpc/clients/engine.client';
 import * as authClient from '../grpc/clients/auth.client';
-import * as asteroidClient from '../grpc/clients/asteroid.client';
-import * as shipClient from '../grpc/clients/ship.client';
 
 const startedAt = Date.now();
 

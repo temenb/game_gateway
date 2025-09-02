@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import {Router} from 'express';
 import * as asteroidController from '../controllers/asteroid.controller';
 
 const router = Router();

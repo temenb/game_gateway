@@ -1,8 +1,5 @@
 import * as AuthClient from '../grpc/clients/auth.client';
 
-export const getToken = async (deviceId: string) =>
-  await AuthClient.getToken(deviceId);
-
 export const register = async (email: string, password: string) =>
   await AuthClient.register(email, password);
 
@@ -22,13 +19,16 @@ export const resetPassword = async (token: string, newPassword: string) =>
   await AuthClient.resetPassword(token, newPassword);
 
 export const health = async () =>
-    await AuthClient.health();
+  await AuthClient.health();
 
 export const status = async () =>
-    await AuthClient.status();
+  await AuthClient.status();
 
 export const livez = async () =>
-    await AuthClient.livez();
+  await AuthClient.livez();
 
 export const readyz = async () =>
-    await AuthClient.readyz();
+  await AuthClient.readyz();
+
+export const anonymousSignIn = async (deviceId: string) =>
+  await AuthClient.anonymousSignIn(deviceId);

@@ -1,10 +1,7 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import morgan from 'morgan';
-import cors from 'cors';
 import gatewayRoutes from './routes/gateway.routes';
-import {verifyToken} from "./middlewares/auth.middleware";
-import cookieParser from 'cookie-parser';
-import {publicPaths} from "../config/publicPaths.config";
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 app.use(express.json());
@@ -24,6 +21,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 // app.use(withAuth);
 
 app.use('/', gatewayRoutes);
+app.use('/auth', authRoutes);
 
 export default app;
 
