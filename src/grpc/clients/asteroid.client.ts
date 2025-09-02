@@ -1,5 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as AsteroidGrpc from '../../generated/asteroid';
+import * as HealthGrpc from '../../generated/common/health';
+import * as EmptyGrpc from '../../generated/common/empty';
 import config from '../../config/config';
 import { logger } from '@shared/logger';
 
@@ -51,22 +53,22 @@ function wrapGrpcCall<T>(fn: (client: AsteroidGrpc.AsteroidClient, cb: (err: grp
     });
 }
 
-export const health = (): Promise<AsteroidGrpc.HealthReport> => {
-    const grpcRequest: AsteroidGrpc.Empty = {};
+export const health = (): Promise<HealthGrpc.HealthReport> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.health(grpcRequest, cb));
 };
 
-export const status = (): Promise<AsteroidGrpc.StatusInfo> => {
-    const grpcRequest: AsteroidGrpc.Empty = {};
+export const status = (): Promise<HealthGrpc.StatusInfo> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.status(grpcRequest, cb));
 };
 
-export const livez = (): Promise<AsteroidGrpc.LiveStatus> => {
-    const grpcRequest: AsteroidGrpc.Empty = {};
+export const livez = (): Promise<HealthGrpc.LiveStatus> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.livez(grpcRequest, cb));
 };
 
-export const readyz = (): Promise<AsteroidGrpc.ReadyStatus> => {
-    const grpcRequest: AsteroidGrpc.Empty = {};
+export const readyz = (): Promise<HealthGrpc.ReadyStatus> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.readyz(grpcRequest, cb));
 };

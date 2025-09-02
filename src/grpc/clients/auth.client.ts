@@ -1,107 +1,72 @@
 import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../../generated/auth';
+import * as HealthGrpc from '../../generated/common/health';
+import * as EmptyGrpc from '../../generated/common/empty';
 import config from '../../config/config';
 import { logger } from '@shared/logger';
+import { GrpcClientManager } from '@shared/grpc-client-manager';
+import {Client} from "@grpc/grpc-js";
 
-export let authClient = createClient();
-
-function createClient(): AuthGrpc.AuthClient {
+const authManager = new GrpcClientManager<AuthGrpc.AuthClient>(() => {
   return new AuthGrpc.AuthClient(config.serviceAuthUrl, grpc.credentials.createInsecure());
-}
+});
 
-function getAuthClient(): AuthGrpc.AuthClient {
-  return authClient;
-}
-
-function reconnectClient() {
-  logger.warn('🔄 Reconnecting AuthClient...');
-  authClient = createClient();
-}
-
-function isRecoverableGrpcError(err: grpc.ServiceError | null): boolean {
-  return !!err && [
-    grpc.status.UNAVAILABLE,
-    grpc.status.DEADLINE_EXCEEDED,
-    grpc.status.INTERNAL,
-  ].includes(err.code);
-}
-
-function wrapGrpcCall<T>(fn: (client: AuthGrpc.AuthClient, cb: (err: grpc.ServiceError | null, res?: T) => void) => void): Promise<T> {
-  return new Promise((resolve, reject) => {
-    fn(getAuthClient(), (err, res) => {
-      if (isRecoverableGrpcError(err)) {
-        logger.info('[grcp ]reconnecting]');
-        reconnectClient();
-        return fn(getAuthClient(), (retryErr, retryRes) => {
-          if (retryErr || !retryRes) {
-            logger.error('gRPC retry failed:', retryErr);
-            return reject(new Error('gRPC retry failed'));
-          }
-          resolve(retryRes);
-        });
-      }
-
-      if (err || !res) {
-        logger.error('gRPC error:', err);
-        return reject(new Error('Internal gRPC error'));
-      }
-
-      resolve(res);
-    });
-  });
-}
-
-export const health = (): Promise<AuthGrpc.HealthReport> => {
-  const grpcRequest: AuthGrpc.Empty = {};
-  return wrapGrpcCall((client, cb) => client.health(grpcRequest, cb));
+export const health = (): Promise<HealthGrpc.HealthReport> => {
+  const grpcRequest: EmptyGrpc.Empty = {};
+  return authManager.call((client, cb) => client.health(grpcRequest, cb));
 };
 
-export const status = (): Promise<AuthGrpc.StatusInfo> => {
-  const grpcRequest: AuthGrpc.Empty = {};
-  return wrapGrpcCall((client, cb) => client.status(grpcRequest, cb));
+export const status = (): Promise<HealthGrpc.StatusInfo> => {
+  const grpcRequest: EmptyGrpc.Empty = {};
+  return authManager.call((client, cb) => client.status(grpcRequest, cb));
 };
 
-export const livez = (): Promise<AuthGrpc.LiveStatus> => {
-  const grpcRequest: AuthGrpc.Empty = {};
-  return wrapGrpcCall((client, cb) => client.livez(grpcRequest, cb));
+export const livez = (): Promise<HealthGrpc.LiveStatus> => {
+  const grpcRequest: EmptyGrpc.Empty = {};
+  return authManager.call((client, cb) => client.livez(grpcRequest, cb));
 };
 
-export const readyz = (): Promise<AuthGrpc.ReadyStatus> => {
-  const grpcRequest: AuthGrpc.Empty = {};
-  return wrapGrpcCall((client, cb) => client.readyz(grpcRequest, cb));
+export const readyz = (): Promise<HealthGrpc.ReadyStatus> => {
+  const grpcRequest: EmptyGrpc.Empty = {};
+  return authManager.call((client, cb) => client.readyz(grpcRequest, cb));
 };
 
 export const register = (email: string, password: string): Promise<AuthGrpc.AuthResponse> => {
   const grpcRequest: AuthGrpc.RegisterRequest = {email, password};
-  return wrapGrpcCall((client, cb) => client.register(grpcRequest, cb));
+  return authManager.call((client, cb) => client.register(grpcRequest, cb));
 };
 
 export const anonymousSignIn = (): Promise<AuthGrpc.AuthResponse> => {
-  const grpcRequest: AuthGrpc.Empty = {};
-  return wrapGrpcCall((client, cb) => client.anonymousSignIn(grpcRequest, cb));
+  const grpcRequest: EmptyGrpc.Empty = {};
+  return authManager.call((client, cb) => client.anonymousSignIn(grpcRequest, cb));
 };
 
 export const login = (email: string, password: string): Promise<AuthGrpc.AuthResponse> => {
   const grpcRequest: AuthGrpc.LoginRequest = {email, password};
-  return wrapGrpcCall((client, cb) => client.login(grpcRequest, cb));
+  return authManager.call((client, cb) => client.login(grpcRequest, cb));
 };
 
 export const refreshTokens = (token: string): Promise<AuthGrpc.AuthResponse> => {
   const grpcRequest: AuthGrpc.RefreshTokensRequest = {token};
-  return wrapGrpcCall((client, cb) => client.refreshTokens(grpcRequest, cb));
+  return authManager.call((client, cb) => client.refreshTokens(grpcRequest, cb));
+};
+
+export const getToken = (deviceId: string): Promise<AuthGrpc.AuthResponse> => {
+  const grpcRequest: AuthGrpc.GetTokenRequest = {deviceId};
+  return authManager.call((client, cb) => client.getToken(grpcRequest, cb));
 };
 
 export const logout = (userId: string): Promise<AuthGrpc.LogoutResponse> => {
   const grpcRequest: AuthGrpc.LogoutRequest = {userId};
-  return wrapGrpcCall((client, cb) => client.logout(grpcRequest, cb));
+  return authManager.call((client, cb) => client.logout(grpcRequest, cb));
 };
 
-export const forgotPassword = (email: string): Promise<AuthGrpc.Empty> => {
+export const forgotPassword = (email: string): Promise<EmptyGrpc.Empty> => {
   const grpcRequest: AuthGrpc.ForgotPasswordRequest = {email};
-  return wrapGrpcCall((client, cb) => client.forgotPassword(grpcRequest, cb));
+  return authManager.call((client, cb) => client.forgotPassword(grpcRequest, cb));
 };
 
 export const resetPassword = (token: string, newPassword: string): Promise<AuthGrpc.AuthResponse> => {
   const grpcRequest: AuthGrpc.ResetPasswordRequest = {token, newPassword};
-  return wrapGrpcCall((client, cb) => client.resetPassword(grpcRequest, cb));
+  return authManager.call((client, cb) => client.resetPassword(grpcRequest, cb));
 };

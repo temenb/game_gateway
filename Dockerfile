@@ -7,6 +7,7 @@ COPY shared/ ./shared/
 COPY turbo.json  ./
 COPY package.json ./
 COPY pnpm-workspace.yaml ./
+COPY tsconfig.json ./
 COPY services/gateway/package*.json ./services/gateway/
 COPY services/gateway/jest.config.js ./services/gateway/
 COPY services/gateway/tsconfig.json ./services/gateway/
@@ -22,6 +23,7 @@ RUN chown -R node:node /usr/src/app
 USER node
 
 EXPOSE 3000
+EXPOSE 5000
 
 CMD ["pnpm", "--filter", "gateway", "start"]
 

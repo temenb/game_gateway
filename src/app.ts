@@ -1,79 +1,55 @@
 import dotenv from 'dotenv';
-import {ProfileService} from './generated/profile';
+import httpApp from './http.server';
+import grpcServer from './grpc.server';
 import * as grpc from '@grpc/grpc-js';
-import * as profileHandler from "./grpc/handlers/profile.handler";
-import kafkaConfig, {createUserConsumerConfig} from "./config/kafka.config";
-import { createConsumer } from '@shared/kafka';
 import logger from '@shared/logger';
-import {userCreated} from "./utils/consumers";
 
 dotenv.config();
 
-const server = new grpc.Server();
+const GRPC_PORT = process.env.GRPC_PORT ?? '3000';
+const HTTP_PORT = process.env.HTTP_PORT ?? 5000;
 
-server.addService(ProfileService, {
-    upsert: profileHandler.upsert,
-    view: profileHandler.getProfile,
-    health: profileHandler.health,
-    status: profileHandler.status,
-    livez: profileHandler.livez,
-    readyz: profileHandler.readyz,
-});
+async function startGrpc() {
+  return new Promise<void>((resolve, reject) => {
+    grpcServer.bindAsync(
+      `0.0.0.0:${GRPC_PORT}`,
+      grpc.ServerCredentials.createInsecure(),
+      (err, port) => {
+        if (err) {
+          logger.error('❌ Ошибка запуска gRPC:', err);
+          return reject(err);
+        }
+        grpcServer.start();
+        logger.info(`🟢 gRPC сервер запущен на порту ${port}`);
+        resolve();
+      }
+    );
+  });
+}
 
-createConsumer(kafkaConfig, {
-    ...createUserConsumerConfig,
-    handler: userCreated,
-});
+async function startHttp() {
+  return new Promise<void>((resolve) => {
+    httpApp.listen(HTTP_PORT, () => {
+      logger.info(`🌐 HTTP сервер запущен на порту ${HTTP_PORT}`);
+      resolve();
+    });
+  });
+}
 
-export default server;
+async function bootstrap() {
+  try {
+    await Promise.all([startGrpc(), startHttp()]);
+    logger.info('🚀 Gateway успешно запущен: gRPC + HTTP');
+  } catch (err) {
+    logger.error('💥 Ошибка запуска Gateway:', err);
+    process.exit(1);
+  }
 
+  process.on('SIGINT', () => {
+    logger.info('🛑 Завершение работы...');
+    grpcServer.forceShutdown();
+    process.exit(0);
+  });
+}
 
-
-
-
-
-
-
-
-
-
-import express, { Request, Response, NextFunction } from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import healthRoutes from './routes/health.routes';
-import authRoutes from './routes/auth.routes';
-import profileRoutes from './routes/profile.routes';
-import shipRoutes from './routes/ship.routes';
-import asteroidRoutes from './routes/asteroid.routes';
-import engineRoutes from './routes/engine.routes';
-import {verifyToken} from "./middlewares/auth.middleware";
-import cookieParser from 'cookie-parser';
-import {publicPaths} from "./config/publicPaths.config";
-import {anonymousSignIn} from "./grpc/clients/auth.client";
-
-const app = express();
-app.use(express.json());
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-app.use(cors({
-    origin: '*', // ['http://localhost:8080']
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
-app.use(cookieParser());
-
-const withAuth = (req: Request, res: Response, next: NextFunction) => {
-    const isPublic = publicPaths.some(path => req.path.startsWith(path));
-    if (isPublic) return next();
-    return verifyToken(anonymousSignIn)(req, res, next)
-};
-app.use(withAuth);
-
-app.use('/', healthRoutes);
-app.use('/auth', authRoutes);
-app.use('/profile', profileRoutes);
-app.use('/ship', shipRoutes);
-app.use('/asteroid', asteroidRoutes);
-app.use('/engine', engineRoutes);
-
-export default app;
-
+bootstrap();

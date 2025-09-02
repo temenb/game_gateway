@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {logger} from '@shared/logger';
-import {authClient} from '../grpc/clients/auth.client';
+import * as authClient from '../grpc/clients/auth.client';
 import {asteroidClient} from '../grpc/clients/asteroid.client';
 import {shipClient} from '../grpc/clients/ship.client';
 import {profileClient} from '../grpc/clients/profile.client';
@@ -56,7 +56,6 @@ const getGrpcReport = (client: any): Promise<any> => {
     });
   });
 };
-
 
 const checkGrpcHealth = (client: any): Promise<boolean> => {
   return new Promise((resolve) => {

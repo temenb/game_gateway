@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const config = {
-    port: process.env.PORT || 3000,
+    grpcPort: process.env.GRPC_PORT || 3000,
+    httpPort: process.env.HTTP_PORT || 5000,
     serviceAuthUrl: process.env.SERVICE_AUTH_URL || 'auth:3000',
     serviceProfileUrl: process.env.SERVICE_PROFILE_URL || 'profile:3000',
     serviceShipUrl: process.env.SERVICE_SHIP_URL || 'ship:3000',

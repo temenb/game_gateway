@@ -1,5 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as ProfileGrpc from '../../generated/profile';
+import * as HealthGrpc from '../../generated/common/health';
+import * as EmptyGrpc from '../../generated/common/empty';
 import config from '../../config/config';
 import { logger } from '@shared/logger';
 
@@ -51,23 +53,23 @@ function wrapGrpcCall<T>(fn: (client: ProfileGrpc.ProfileClient, cb: (err: grpc.
     });
 }
 
-export const health = (): Promise<ProfileGrpc.HealthReport> => {
-    const grpcRequest: ProfileGrpc.Empty = {};
+export const health = (): Promise<HealthGrpc.HealthReport> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.health(grpcRequest, cb));
 };
 
-export const status = (): Promise<ProfileGrpc.StatusInfo> => {
-    const grpcRequest: ProfileGrpc.Empty = {};
+export const status = (): Promise<HealthGrpc.StatusInfo> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.status(grpcRequest, cb));
 };
 
-export const livez = (): Promise<ProfileGrpc.LiveStatus> => {
-    const grpcRequest: ProfileGrpc.Empty = {};
+export const livez = (): Promise<HealthGrpc.LiveStatus> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.livez(grpcRequest, cb));
 };
 
-export const readyz = (): Promise<ProfileGrpc.ReadyStatus> => {
-    const grpcRequest: ProfileGrpc.Empty = {};
+export const readyz = (): Promise<HealthGrpc.ReadyStatus> => {
+    const grpcRequest: EmptyGrpc.Empty = {};
     return wrapGrpcCall((client, cb) => client.readyz(grpcRequest, cb));
 };
 
