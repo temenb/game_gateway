@@ -4,72 +4,29 @@ import * as HealthGrpc from '../../generated/common/health';
 import * as EmptyGrpc from '../../generated/common/empty';
 import config from '../../config/config';
 import { logger } from '@shared/logger';
+import { GrpcClientManager } from '@shared/grpc-client-manager';
 
-export let engineClient = createClient();
-
-function createClient(): EngineGrpc.EngineClient {
+const engineManager = new GrpcClientManager<EngineGrpc.EngineClient>(() => {
     return new EngineGrpc.EngineClient(config.serviceEngineUrl, grpc.credentials.createInsecure());
-}
+});
 
-function getEngineClient(): EngineGrpc.EngineClient {
-    return engineClient;
-}
-
-function reconnectClient() {
-    logger.warn('🔄 Reconnecting EngineClient...');
-    engineClient = createClient();
-}
-
-function isRecoverableGrpcError(err: grpc.ServiceError | null): boolean {
-    return !!err && [
-        grpc.status.UNAVAILABLE,
-        grpc.status.DEADLINE_EXCEEDED,
-        grpc.status.INTERNAL,
-    ].includes(err.code);
-}
-
-function wrapGrpcCall<T>(fn: (client: EngineGrpc.EngineClient, cb: (err: grpc.ServiceError | null, res?: T) => void) => void): Promise<T> {
-    return new Promise((resolve, reject) => {
-        fn(getEngineClient(), (err, res) => {
-            if (isRecoverableGrpcError(err)) {
-                logger.info('[grcp ]reconnecting]');
-                reconnectClient();
-                return fn(getEngineClient(), (retryErr, retryRes) => {
-                    if (retryErr || !retryRes) {
-                        logger.error('gRPC retry failed:', retryErr);
-                        return reject(new Error('gRPC retry failed'));
-                    }
-                    resolve(retryRes);
-                });
-            }
-
-            if (err || !res) {
-                logger.error('gRPC error:', err);
-                return reject(new Error('Internal gRPC error'));
-            }
-
-            resolve(res);
-        });
-    });
-}
-
-export const health = (): Promise<HealthGrpc.HealthReport> => {
+export const health = (): Promise<HealthGrpc.HealthReport | null> => {
     const grpcRequest: EmptyGrpc.Empty = {};
-    return wrapGrpcCall((client, cb) => client.health(grpcRequest, cb));
+    return engineManager.call((client, cb) => client.health(grpcRequest, cb));
 };
 
-export const status = (): Promise<HealthGrpc.StatusInfo> => {
+export const status = (): Promise<HealthGrpc.StatusInfo | null> => {
     const grpcRequest: EmptyGrpc.Empty = {};
-    return wrapGrpcCall((client, cb) => client.status(grpcRequest, cb));
+    return engineManager.call((client, cb) => client.status(grpcRequest, cb));
 };
 
-export const livez = (): Promise<HealthGrpc.LiveStatus> => {
+export const livez = (): Promise<HealthGrpc.LiveStatus | null> => {
     const grpcRequest: EmptyGrpc.Empty = {};
-    return wrapGrpcCall((client, cb) => client.livez(grpcRequest, cb));
+    return engineManager.call((client, cb) => client.livez(grpcRequest, cb));
 };
 
-export const readyz = (): Promise<HealthGrpc.ReadyStatus> => {
+export const readyz = (): Promise<HealthGrpc.ReadyStatus | null> => {
     const grpcRequest: EmptyGrpc.Empty = {};
-    return wrapGrpcCall((client, cb) => client.readyz(grpcRequest, cb));
+    return engineManager.call((client, cb) => client.readyz(grpcRequest, cb));
 };
 

@@ -17,12 +17,12 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
-const withAuth = (req: Request, res: Response, next: NextFunction) => {
-    const isPublic = publicPaths.some(path => req.path.startsWith(path));
-    if (isPublic) return next();
-    return verifyToken(anonymousSignIn)(req, res, next)
-};
-app.use(withAuth);
+// const withAuth = (req: Request, res: Response, next: NextFunction) => {
+//     const isPublic = publicPaths.some(path => req.path.startsWith(path));
+//     if (isPublic) return next();
+//     return verifyToken(anonymousSignIn)(req, res, next)
+// };
+// app.use(withAuth);
 
 app.use('/', healthRoutes);
 
