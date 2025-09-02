@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import httpApp from './http.server';
-import grpcServer from './grpc.server';
+import httpApp from './http/server';
+import grpcServer from './server';
 import * as grpc from '@grpc/grpc-js';
 import logger from '@shared/logger';
 

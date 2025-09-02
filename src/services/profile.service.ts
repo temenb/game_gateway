@@ -1,66 +1,16 @@
-import {Request, Response} from "express";
 import * as ProfileClient from "../grpc/clients/profile.client";
-import getUserId from '../utils/getUserId';
-import logger from "@shared/logger";
 
-export const getProfile = async (req: Request, res: Response) => {
-    const userId = getUserId(req);
+export const getProfile = async (userId: string) =>
+    await ProfileClient.getProfile(userId);
 
-    try {
-        const response = await ProfileClient.getProfile(userId);
-        res.status(200).json(response);
-    } catch (err) {
-        if (err instanceof Error) {
-            return res.status(500).json({ error: err.message });
-        }
-        return res.status(500).json({ error: 'Unknown error' });
-    }
-};
+export const health = async () =>
+    await ProfileClient.health();
 
-export const health = async (req: Request, res: Response) => {
-    try {
-        const response = await ProfileClient.health();
-        res.status(200).json(response);
-    } catch (err) {
-        if (err instanceof Error) {
-            return res.status(500).json({ error: err.message });
-        }
-        return res.status(500).json({ error: 'Unknown error' });
-    }
-};
+export const status = async () =>
+    await ProfileClient.status();
 
-export const status = async (req: Request, res: Response) => {
-    try {
-        const response = await ProfileClient.status();
-        res.status(200).json(response);
-    } catch (err) {
-        if (err instanceof Error) {
-            return res.status(500).json({ error: err.message });
-        }
-        return res.status(500).json({ error: 'Unknown error' });
-    }
-};
+export const livez = async () =>
+    await ProfileClient.livez();
 
-export const livez = async (req: Request, res: Response) => {
-    try {
-        const response = await ProfileClient.livez();
-        res.status(200).json(response);
-    } catch (err) {
-        if (err instanceof Error) {
-            return res.status(500).json({ error: err.message });
-        }
-        return res.status(500).json({ error: 'Unknown error' });
-    }
-};
-
-export const readyz = async (req: Request, res: Response) => {
-    try {
-        const response = await ProfileClient.readyz();
-        res.status(200).json(response);
-    } catch (err) {
-        if (err instanceof Error) {
-            return res.status(500).json({ error: err.message });
-        }
-        return res.status(500).json({ error: 'Unknown error' });
-    }
-};
+export const readyz = async () =>
+    await ProfileClient.readyz();
